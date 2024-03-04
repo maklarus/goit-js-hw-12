@@ -1,10 +1,15 @@
 // Описаний у документації
 import iziToast from 'izitoast';
 // Додатковий імпорт стилів
+import axios from 'axios';
 
 import { renderImgs } from './render-functions';
 
-const API_URL = 'https://pixabay.com/api';
+const loader = document.querySelector('.loader');
+const loadMoreBtn = document.querySelector('.load-more');
+const gallery = document.querySelector('.gallery');
+
+axios.defaults.baseURL = 'https://pixabay.com/api';
 const API_KEY = '42570593-7f6e60f401c84611dfc2b0674';
 const searchParams = new URLSearchParams({
   image_type: 'photo',
@@ -12,40 +17,36 @@ const searchParams = new URLSearchParams({
   safesearch: 'true',
 });
 
-const addLoader = () => {
-  const loader = document.querySelector('.loader');
-  loader.style.display = 'inline-block';
-};
+export async function fetchImgs(query, amount, page) {
+  loader.classList.remove('is-hidden');
 
-export const fetchImgs = searchValue => {
-  addLoader();
-  setTimeout(function () {
-    fetch(`${API_URL}/?key=${API_KEY}&q=${searchValue}&${searchParams}`)
-      .then(r => r.json())
-      .then(data => {
-        if (!data.hits.length) {
-          iziToast.error({
-            title: 'Error',
-            message:
-              'Sorry, there are no images matching your search query. Please try again!',
-            position: 'topRight',
-          });
-          return data;
-        } else {
-          return data;
-        }
-      })
-      .then(renderImgs)
-      .catch(error =>
-        iziToast.error({
-          title: 'Error',
-          message: `Bad request`,
-          position: 'topRight',
-        })
-      )
-      .finally(() => {
-        const loader = document.querySelector('.loader');
-        loader.style.display = 'none';
+  try {
+    const response = await axios.get(
+      `?key=${API_KEY}&q=${query}&${searchParams}&per_page=${amount}&page=${page}`
+    );
+
+    const data = response.data;
+
+    loadMoreBtn.classList.remove('is-hidden');
+
+    if (!data.hits.length) {
+      iziToast.error({
+        title: 'Error',
+        message:
+          'Sorry, there are no images matching your search query. Please try again!',
+        position: 'topRight',
       });
-  }, 250);
-};
+    } else {
+      renderImgs(data);
+    }
+  } catch (error) {
+    console.log(error);
+    iziToast.error({
+      title: 'Error',
+      message: `Bad request`,
+      position: 'topRight',
+    });
+  } finally {
+    loader.classList.add('is-hidden');
+  }
+}

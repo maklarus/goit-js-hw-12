@@ -27,6 +27,8 @@ input:active {
 }
 
 button {
+  display: block;
+  margin: 0 auto;
   cursor: pointer;
   font-weight: 500;
   font-size: 16px;
@@ -36,8 +38,6 @@ button {
   border-radius: 8px;
   border: none;
   padding: 8px 16px;
-  width: 91px;
-  height: 40px;
   background: #4e75ff;
 }
 
@@ -51,6 +51,7 @@ button:hover {
   display: flex;
   flex-wrap: wrap;
   gap: 24px;
+  margin-bottom: 20px;
 }
 
 .gallery-item {
@@ -107,7 +108,7 @@ form {
 .loader {
   width: 48px;
   height: 48px;
-  display: none;
+  display: inline-block;
   position: relative;
   border: 3px solid;
   border-color: #4e75ff #0000 #fff #0000;
@@ -133,4 +134,8 @@ form {
   100% {
     transform: rotate(360deg);
   }
+}
+
+.is-hidden {
+  display: none;
 }
